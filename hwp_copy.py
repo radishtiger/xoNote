@@ -4,14 +4,14 @@ from tkinter import Tk
 from tkinter.filedialog import askopenfilename
 import win32com.client as win32
 from time import sleep
-root = Tk()
-filename = askopenfilename()
-root.destroy()
+# root = Tk()
+# filename = askopenfilename()
+# root.destroy()
 
 hwp = win32.gencache.EnsureDispatch("hwpframe.hwpobject")  # 한/글 실행하기
-hwp.XHwpWindows.Item(0).Visible = False  # 백그라운드 숨김 해제
-hwp.Open(filename)
-hwp.HAction.Run("FileFullScreen")
+# hwp.XHwpWindows.Item(0).Visible = False  # 백그라운드 숨김 해제
+# hwp.Open(filename)
+# hwp.HAction.Run("FileFullScreen")
 
 
 
@@ -31,8 +31,15 @@ def en_location(hwp):
     en_list.append(position)
     return en_list
 
-
-def content_copy(hwp, location):
+def content_copy(hwp, location_tuple):
+    start, end = location_tuple
+    hwp.SetPos(*start)
+    hwp.Run("Select")
+    hwp.SetPos(*end)
+    hwp.Run("Copy")
+    
+    
+def total_content_copy(hwp, location):
     n = len(location)
     content = []
     if n==0:
@@ -48,15 +55,23 @@ def content_copy(hwp, location):
            
     return content
     
-hwp.Run("Cancel")  # 완료했으면 선택해제
+# hwp.Run("Cancel")  # 완료했으면 선택해제
 
-location_list = en_location(hwp)
-content_list = content_copy(hwp, location_list)
+# location_list = en_location(hwp)
+# content_list = total_content_copy(hwp, location_list)
 
+# print("location_num :", len(location_list))
+# for i in location_list:
+#     print("location :", i)
 
-for i in en_location(hwp):
-    print("location :", i)
+# print("content_num:", len(content_list))
+# for i in content_list:
+#     print(i)
+#     print("------------------------")
 
-
-for i in content_list:
-    print("text:", i)
+def location_pair_generate(location_list):
+    n = len(location_list)
+    if n<2:
+        print("not enough locations. You have",n,"EndNotes")
+        return None
+    return [(location_list[i], location_list[i+1]) for i in range(n-1)]

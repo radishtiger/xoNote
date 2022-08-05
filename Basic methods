@@ -1,0 +1,102 @@
+
+source : https://martinii.fun/pages/hwp%EC%9D%98-Run%EB%A9%94%EC%84%9C%EB%93%9C-%EC%A0%84%EC%B2%B4%EB%AA%A9%EB%A1%9D-%EB%B0%8F-%EC%8B%9C%EC%97%B0%ED%99%94%EB%A9%B4
+
+hwp.Run("BreakColumn") : 단 나누기(crtl + shift + enter)    
+    
+hwp.Run("BreakLine") : 문단 유지 줄바꿈(shift + enter)
+    
+hwp.Run("BreakPage") : 페이지 바꿈(ctrl + enter)
+
+hwp.Run("BreakPara") : 엔터(enter)
+
+hwp.Run("Cancel") : ESC
+
+hwp.Run("Close") (또는 CloseEx) : Shift + ESC ---> 실행시 close는 본문으로 커서가 이동하지만 closeex는 캐럿(표, 각주)로 이동함. closeex에는 전체화면을 해제하는 기능이 있음. close는 없음.
+
+hwp.Run("Copy") : 복사하기. 말 그대로 (ctrl + C)
+
+hwp.Run("Cut") : 잘라내기 (ctrl + x)
+
+hwp.Run("Delete") : 컴퓨터의 delete 버튼과 동일
+
+hwp.Run("DeleteBack") : delete 방향을 우측에서 좌측으로. Backspace와 동일한 듯.
+
+hwp.Run("DeleteField") : 누름틀 지우기. 안의 텍스트는 지우지 않고 틀만 지우므로, 일반 텍스트로 변환하고자 할때 쓰임.
+
+hwp.Run("DeleteLine") : 줄 삭제(ctrl + Y). 문단과 관계없이 딱 한 줄이 삭제됨. 표 등의 객체를 삭제할 때는 팝업이 뜸.
+
+hwp.Run("Erase") : 선택한 문자나 개체 삭제. 문자열이나 컨트롤 등을 삭제한다는 점에서는 Delete나 DeleteBack과 유사하지만, 가장 큰 차이점은, 아무 것도 선택되어 있지 않은 상태일 때 Erase는 아무 것도 지우지 않는다는 점이다. 
+                (Delete나 DeleteBack은 어찌됐든 앞뒤의 뭔가를 지운다.)
+                
+                
+hwp.Run("FileClose"):
+문서 닫기. 한/글을 종료하는 명령어는 아니다. 다만 문서저장 이후 수정을 한 상태이거나, 빈 문서를 열어서 편집한 경우에는, 팝업이 나타나고 사용자 입력을 요구하므로 자동화작업에 걸림돌이 된다.
+
+이를 해결하는 세 가지(?) 옵션이 있는데,
+
+①문서를 저장한 후 FileClose 실행
+
+저장하는 방법은, hwp.SaveAs(Path)
+
+ 
+
+②변경된 내용을 버린 후 FileClose 실행(탬플릿문서를 쓰고 있거나, 이미 PDF로 저장했다든지, 캡쳐를 완료한 경우 등)
+
+버리는 방법은 hwp.Clear(option=1)
+
+※ Clear 메서드는 경우에 따라 심각한 오류를 뱉기도 한다. 그것도 상당히 빈도가 잦아서 필자는 Clear를 사용하지 않는 편이다. 대신 아래의 XHwpDocument.Close(False)를 사용하는 편.
+
+③변경된 내용을 버리고 문서를 닫는 명령 실행
+
+hwp.XHwpDocuments.Item(0).Close(isDirty=False)
+
+위 명령어는 다소 길어 보이지만 hwp.Clear(option=1); hwp.Run("FileClose")와 동일하게 작동한다.
+
+
+
+hwp.Run("FileNew"):
+새 문서 창을 여는 명령어. 참고로 현재 창에서 새 탭을 여는 명령어는 hwp.Run("FileNewTab")
+
+여담이지만 한/글2020 기준으로 새 창은 30개까지 열 수 있다. 그리고 한 창에는 탭을 30개까지 열 수 있다. 즉, (리소스만 충분하다면) 동시에 열어서 자동화를 돌릴 수 있는 문서 갯수는 900개.
+
+hwp.Run("FileOpen"):
+문서를 여는 명령어. 단 파일선택 팝업이 뜨므로, 자동화작업시에는 이 명령어를 사용하지 않는다.  대신 hwp.Open(파일명)을 사용해야 한다. 레지스트리에디터에 보안모듈 등록을 해놓으면 hwp.Open 명령 실행시에 보안팝업도 뜨지 않는다.
+
+hwp.Run("FileQuit"):
+한/글 프로그램을 종료한다. 단, 저장 이후 문서수정이 있는 경우에는 팝업이 뜨므로, ①저장하거나 ②수정내용을 버리는 메서드를 활용해야 한다.
+
+
+hwp.Run("FileSave"):
+파일을 저장하는 액션(Alt-S). 자동화프로세스 중 빈 문서를 열어 작성하는 경우에는, 저장액션 실행시 아래와 같이 경로선택 팝업이 뜨므로, hwp.SaveAs(Path) 메서드를 사용하여 저장한 후 Run("FileSave")를 써야 한다.
+hwp.Run("FileSave")는 hwp.Save() 메서드와 거의 동일하지만 한 가지 차이점이 있는데,
+    - hwp.Save()는 수정사항이 있는 경우에만 저장 프로세스를 실행하여 부하를 줄이는데 반해
+    - hwp.Run("FileSave")는 매번 실행할 때마다 변동사항이 없더라도 저장 프로세스를 실행한다.
+단, hwp.Save(save_if_dirty=False) 방식으로 파라미터를 주고 실행하면 Run("FileSave")와 동일하게, 수정이 없더라도 매번 저장을 수행하게 된다.
+
+hwp.Run("FileSaveAs"):
+다른 이름으로 저장(Alt-V). 사용자입력을 필요로 하므로 이 액션은 사용하지 않는다.
+대신 hwp.SaveAs(Path)를 사용하면 된다.
+
+hwp.Run("InsertSpace") : 공백 삽입
+
+hwp.Run("InsertTab") : 탭 삽입
+
+hwp.Run("MacroPause") : 매크로 실행 일시 중지 (정의/실행)
+
+hwp.Run("MacroPlay1") : 매크로 1
+
+hwp.Run("MacroRepeat") : 매크로 실행
+
+hwp.Run("MacroStop") : 매크로 실행 중지 (정의/실행)
+
+hwp.Run("MoveColumnBegin") : 단의 시작점으로 이동한다. 단이 없을 경우에는 아무동작도 하지 않는다. 해당 리스트 안에서만 동작한다.
+
+hwp.Run("MoveColumnEnd") : 단의 끝점으로 이동한다. 단이 없을 경우에는 아무동작도 하지 않는다. 해당 리스트 안에서만 동작한다.
+
+hwp.Run("MoveDocBegin") : 문서의 시작으로 이동.. 만약 셀렉션을 확장하는 경우에는 LIST_BEGIN/END와 동일하다. 현재 서브 리스트 내에 있으면 빠져나간다.
+
+hwp.Run("MoveDocEnd") : 문서의 끝으로 이동.. 만약 셀렉션을 확장하는 경우에는 LIST_BEGIN/END와 동일하다. 현재 서브 리스트 내에 있으면 빠져나간다.
+
+hwp.Run("MoveLineBegin") : 현재 위치한 줄의 시작으로 이동 (MoveLinEnd는 끝으로 이동)
+
+hwp.Run("StyleShortcut1") : 스타일 단축키
