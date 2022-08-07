@@ -11,6 +11,7 @@ from hwp_copy import en_location, content_copy, location_pair_generate
 
 def find_text(hwp, text):
     # 해당 text 찾고 Esc 누르는 것까지.
+    # hwp.MovePos(2)
     hwp.HAction.GetDefault("RepeatFind", hwp.HParameterSet.HFindReplace.HSet)
     option = hwp.HParameterSet.HFindReplace
     option.FindString = text
@@ -20,10 +21,6 @@ def find_text(hwp, text):
     
     hwp.Run("Cancel")
     # print("cancel end")
-    hwp.Run("MoveLineEnd") # 해당 줄 끝으로 이동
-    # print("moveend End")
-    hwp.Run("BreakPara") # Enter 누르기
-    # print("Enter End")
 
     
     
